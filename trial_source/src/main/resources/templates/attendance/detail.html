@@ -87,6 +87,41 @@
 			return hours + ':' + minutes;
 		}
 	</script>
+	 <script type="text/javascript" th:inline="javascript">
+        window.onload = function () {
+			var notEnterFlg = /*[[${notEnterFlg}]]*/ false;
+          if (notEnterFlg) {
+            alert("過去日の勤怠に未入力があります。");
+          }
+        };
+
+        function punchCheck() {
+          if (confirm("打刻します。よろしいですか？")) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+
+        $("#page_top").hide();
+        $(window).scroll(function () {
+          if ($(this).scrollTop() > 300) {
+            $("#page_top").fadeIn();
+          } else {
+            $("#page_top").fadeOut();
+          }
+        });
+
+        $("#page_top").click(function () {
+          $("body,html").animate(
+            {
+              scrollTop: 0,
+            },
+            700
+          );
+          return false;
+        });
+      </script>
 
 </body>
 </html>

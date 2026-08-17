@@ -18,6 +18,7 @@
 			AND training_date = #{trainingDate} 
 			AND delete_flg = #{deleteFlg}
 	</select>
+	
 
 	<select id="getAttendanceManagement" resultType="jp.co.sss.lms.dto.AttendanceManagementDto">
 		SELECT
@@ -85,5 +86,16 @@
 			blank_time = #{blankTime}
 		WHERE student_attendance_id = #{studentAttendanceId}
 	</update>
+	
+		<select id="notEnterCount" resultType="int">
+		<!-- 条件に合うデータが何件（何日分）あるか数えて、その数字（1, 2, 3...）を返す -->
+	SELECT COUNT(*)
+	FROM t_student_attendance
+	WHERE lms_user_id=#{lmsUserId}
+	AND delete_flg=#{deleteFlg}
+	AND training_date &lt; #{trainingDate}
+	AND status !=1
+	AND (training_start_time='' OR training_end_time='' OR training_start_time IS NULL OR training_end_time IS NULL)
+	</select>
 
 </mapper>

@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
@@ -254,6 +255,22 @@ public class StudentAttendanceService {
 
 			attendanceForm.getAttendanceList().add(dailyAttendanceForm);
 		}
+		//出勤・退勤時間の入力方法変更
+		
+		LinkedHashMap<Integer,String>hourMap = new LinkedHashMap<>();
+		//.put(キー（送信されるデータ）,値（画面に表示される文字）;　：マップに要素を追加する書き方
+		hourMap.put(null,"");
+		for(int i=0; i<12; i++) {
+			//String.format(...): 文字列の見た目を整えてる
+			//%02d:フォーマットの指定（数値を入れる）
+			//0:２桁の満たない場合、「先頭を０で埋める」i = 0 のとき"00"、i = 10 のとき"10"
+			//2:２桁の幅にしてる
+			hourMap.put(i,String.format("%02d", i));
+			//218行目でインスタンス生成してるから使える
+		attendanceForm.setHourMap(hourMap);
+		}
+			
+		
 
 		return attendanceForm;
 	}
@@ -337,6 +354,11 @@ public class StudentAttendanceService {
 	//過去日の未入力チェック
 	//今日より前の過去日に、未入力の勤怠があるかどうかを判定する
 
+	/**
+	 * 
+	 * @return 未打刻が存在する場合は true、それ以外は false
+	 * @throws ParseException
+	 */
 	public Boolean notEnterCheck() throws ParseException {
 		Date trainingDate = attendanceUtil.getTrainingDate();
 		//LocalDate today = LocalDate.now();
@@ -354,4 +376,5 @@ public class StudentAttendanceService {
 			return false;
 		}
 	}
+	
 }

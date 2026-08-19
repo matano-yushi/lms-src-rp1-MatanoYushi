@@ -46,5 +46,26 @@ public class DailyAttendanceForm {
 	private String courseName;
 	/** インデックス */
 	private String index;
+	
+	/**
+	 * @author matano yushi
+	 * 出勤（時）
+	 */
+	private Integer startHour;
+	/**
+	 * @author matano yushi
+	 * 出勤（分）
+	 */
+	private Integer startMinutes;
+	/**
+	 * @author matano yushi
+	 * 退勤（時）
+	 */
+	private Integer endHour;
+	/**
+	 * @author matano yushi
+	 * 退勤（分）
+	 */
+	private Integer endMinutes;
 
 }

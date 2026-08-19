@@ -255,24 +255,57 @@ public class StudentAttendanceService {
 
 			attendanceForm.getAttendanceList().add(dailyAttendanceForm);
 		}
-		//出勤・退勤時間の入力方法変更
-		
-		LinkedHashMap<Integer,String>hourMap = new LinkedHashMap<>();
+
+		/**
+		 * 出勤・退勤時間の入力方法変更
+		 * @author matano yushi
+		 * @return 勤怠編集フォーム
+		 */
+
+		LinkedHashMap<Integer, String> hourMap = new LinkedHashMap<>();
 		//.put(キー（送信されるデータ）,値（画面に表示される文字）;　：マップに要素を追加する書き方
-		hourMap.put(null,"");
-		for(int i=0; i<12; i++) {
+		hourMap.put(null, "");
+		for (int i = 0; i < 24; i++) {
 			//String.format(...): 文字列の見た目を整えてる
 			//%02d:フォーマットの指定（数値を入れる）
 			//0:２桁の満たない場合、「先頭を０で埋める」i = 0 のとき"00"、i = 10 のとき"10"
 			//2:２桁の幅にしてる
-			hourMap.put(i,String.format("%02d", i));
-			//218行目でインスタンス生成してるから使える
-		attendanceForm.setHourMap(hourMap);
+			hourMap.put(i, String.format("%02d", i));
 		}
-			
-		
+		//218行目でインスタンス生成してるから使える
+		attendanceForm.setHourMap(hourMap);
+		//分のプルダウンリスト処理
+		LinkedHashMap<Integer, String> minutesMap = new LinkedHashMap<>();
+		minutesMap.put(null, "");
+		for (int j = 0; j < 60; j++) {
+			minutesMap.put(j, String.format("%02d", j));
+		}
+		attendanceForm.setMinutesMap(minutesMap);
+		for (AttendanceManagementDto attendanceManagementDto : attendanceManagementDtoList) {
+			DailyAttendanceForm dailyAttendanceForm = new DailyAttendanceForm();
+			BeanUtils.copyProperties(attendanceManagementDto, dailyAttendanceForm);
 
+			String timeString = attendanceManagementDto.getTrainingStartTime();
+			if (timeString != null && !timeString.isEmpty()) {
+				int startHour = Integer.parseInt(timeString.substring(0, 2));
+				int startMinutes = Integer.parseInt(timeString.substring(3, 5));
+				dailyAttendanceForm.setStartHour(startHour);
+				dailyAttendanceForm.setStartMinutes(startMinutes);
+			}
+			String endString = attendanceManagementDto.getTrainingEndTime();
+			if (endString != null && !endString.isEmpty()) {
+				int endHour = Integer.parseInt(endString.substring(0, 2));
+				int endMinutes = Integer.parseInt(endString.substring(3, 5));
+				dailyAttendanceForm.setEndHour(endHour);
+				dailyAttendanceForm.setEndMinutes(endMinutes);
+
+				attendanceForm.getAttendanceList().add(dailyAttendanceForm);
+
+			}
+
+		}
 		return attendanceForm;
+
 	}
 
 	/**
@@ -355,7 +388,8 @@ public class StudentAttendanceService {
 	//今日より前の過去日に、未入力の勤怠があるかどうかを判定する
 
 	/**
-	 * 
+	 * 勤怠管理(過去日が未入力の場合の処理）
+	 * @author matano yushi
 	 * @return 未打刻が存在する場合は true、それ以外は false
 	 * @throws ParseException
 	 */
@@ -376,5 +410,12 @@ public class StudentAttendanceService {
 			return false;
 		}
 	}
-	
+
+	/**
+	 * @author matano yushi
+	 */
+	public void formatConvaersion(AttendanceForm attendanceForm) {
+		for (DailyAttendanceForm dailyAttendanceForm : attendanceForm.getAttendanceList()) {
+		}
+	}
 }

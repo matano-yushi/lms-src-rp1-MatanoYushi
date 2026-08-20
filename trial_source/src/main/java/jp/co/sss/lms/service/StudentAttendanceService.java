@@ -222,12 +222,24 @@ public class StudentAttendanceService {
 		attendanceForm.setLeaveFlg(loginUserDto.getLeaveFlg());
 		attendanceForm.setBlankTimes(attendanceUtil.setBlankTime());
 
+		//時と分のダイアログ処理
+		LinkedHashMap<Integer, String> hourMap = new LinkedHashMap<>();
+		hourMap.put(null, "");
+		for (int i = 0; i < 24; i++) {
+			hourMap.put(i, String.format("%02d", i));
+		}
+		attendanceForm.setHourMap(hourMap);
+		LinkedHashMap<Integer, String> minutesMap = new LinkedHashMap<>();
+		minutesMap.put(null, "");
+		for (int j = 0; j < 60; j++) {
+			minutesMap.put(j, String.format("%02d", j));
+		}
+		attendanceForm.setMinutesMap(minutesMap);
+
 		// 途中退校している場合のみ設定
 		if (loginUserDto.getLeaveDate() != null) {
-			attendanceForm
-					.setLeaveDate(dateUtil.dateToString(loginUserDto.getLeaveDate(), "yyyy-MM-dd"));
-			attendanceForm.setDispLeaveDate(
-					dateUtil.dateToString(loginUserDto.getLeaveDate(), "yyyy年M月d日"));
+			attendanceForm.setLeaveDate(dateUtil.dateToString(loginUserDto.getLeaveDate(), "yyyy-MM-dd"));
+			attendanceForm.setDispLeaveDate(dateUtil.dateToString(loginUserDto.getLeaveDate(), "yyyy年M月d日"));
 		}
 
 		// 勤怠管理リストの件数分、日次の勤怠フォームに移し替え
@@ -253,38 +265,7 @@ public class StudentAttendanceService {
 					.dateToString(attendanceManagementDto.getTrainingDate(), "yyyy年M月d日(E)"));
 			dailyAttendanceForm.setStatusDispName(attendanceManagementDto.getStatusDispName());
 
-			attendanceForm.getAttendanceList().add(dailyAttendanceForm);
-		}
-
-		/**
-		 * 出勤・退勤時間の入力方法変更
-		 * @author matano yushi
-		 * @return 勤怠編集フォーム
-		 */
-
-		LinkedHashMap<Integer, String> hourMap = new LinkedHashMap<>();
-		//.put(キー（送信されるデータ）,値（画面に表示される文字）;　：マップに要素を追加する書き方
-		hourMap.put(null, "");
-		for (int i = 0; i < 24; i++) {
-			//String.format(...): 文字列の見た目を整えてる
-			//%02d:フォーマットの指定（数値を入れる）
-			//0:２桁の満たない場合、「先頭を０で埋める」i = 0 のとき"00"、i = 10 のとき"10"
-			//2:２桁の幅にしてる
-			hourMap.put(i, String.format("%02d", i));
-		}
-		//218行目でインスタンス生成してるから使える
-		attendanceForm.setHourMap(hourMap);
-		//分のプルダウンリスト処理
-		LinkedHashMap<Integer, String> minutesMap = new LinkedHashMap<>();
-		minutesMap.put(null, "");
-		for (int j = 0; j < 60; j++) {
-			minutesMap.put(j, String.format("%02d", j));
-		}
-		attendanceForm.setMinutesMap(minutesMap);
-		for (AttendanceManagementDto attendanceManagementDto : attendanceManagementDtoList) {
-			DailyAttendanceForm dailyAttendanceForm = new DailyAttendanceForm();
-			BeanUtils.copyProperties(attendanceManagementDto, dailyAttendanceForm);
-
+			//出勤（時・分）、退勤（時・分）受け取り分解処理
 			String timeString = attendanceManagementDto.getTrainingStartTime();
 			if (timeString != null && !timeString.isEmpty()) {
 				int startHour = Integer.parseInt(timeString.substring(0, 2));
@@ -298,12 +279,11 @@ public class StudentAttendanceService {
 				int endMinutes = Integer.parseInt(endString.substring(3, 5));
 				dailyAttendanceForm.setEndHour(endHour);
 				dailyAttendanceForm.setEndMinutes(endMinutes);
-
-				attendanceForm.getAttendanceList().add(dailyAttendanceForm);
-
 			}
 
+			attendanceForm.getAttendanceList().add(dailyAttendanceForm);
 		}
+
 		return attendanceForm;
 
 	}
@@ -413,9 +393,27 @@ public class StudentAttendanceService {
 
 	/**
 	 * @author matano yushi
+	 * 出退勤データ結合
 	 */
+
 	public void formatConvaersion(AttendanceForm attendanceForm) {
+		if (attendanceForm == null || attendanceForm.getAttendanceList() == null) {
+			return;}
 		for (DailyAttendanceForm dailyAttendanceForm : attendanceForm.getAttendanceList()) {
+			Integer startHour = dailyAttendanceForm.getStartHour();
+			Integer startMinutes = dailyAttendanceForm.getStartMinutes();
+			if (startHour != null && startMinutes != null) {
+				String trainingStartTime = String.format("%02d:%02d", startHour, startMinutes);
+				dailyAttendanceForm.setTrainingStartTime(trainingStartTime);
+			}
+			Integer endHour = dailyAttendanceForm.getEndHour();
+			Integer endminutes = dailyAttendanceForm.getEndMinutes();
+			if (endHour != null && endminutes != null) {
+				String trainingEndTime = String.format("%02d:%02d", endHour, endminutes);
+				dailyAttendanceForm.setTrainingEndTime(trainingEndTime);
+
+			}
+
 		}
 	}
 }

@@ -109,12 +109,14 @@ public class AttendanceController {
 
 	/**
 	 * 勤怠管理画面 『勤怠情報を直接編集する』リンク押下
-	 * 
+	 * @author matano yushi
 	 * @param model
 	 * @return 勤怠情報直接変更画面
 	 */
 	@RequestMapping(path = "/update")
 	public String update(Model model) {
+        //入力された出退勤情報を呼び出してる(追加）
+		
 
 		// 勤怠管理リストの取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
@@ -123,13 +125,12 @@ public class AttendanceController {
 		AttendanceForm attendanceForm = studentAttendanceService
 				.setAttendanceForm(attendanceManagementDtoList);
 		model.addAttribute("attendanceForm", attendanceForm);
-
+		System.out.println(attendanceForm.getAttendanceList().get(0).getStartHour());
 		return "attendance/update";
 	}
 
 	/**
 	 * 勤怠情報直接変更画面 『更新』ボタン押下
-	 * 
 	 * @param attendanceForm
 	 * @param model
 	 * @param result
@@ -139,7 +140,7 @@ public class AttendanceController {
 	@RequestMapping(path = "/update", params = "complete", method = RequestMethod.POST)
 	public String complete(AttendanceForm attendanceForm, Model model, BindingResult result)
 			throws ParseException {
-
+		studentAttendanceService.formatConvaersion(attendanceForm);
 		// 更新
 		String message = studentAttendanceService.update(attendanceForm);
 		model.addAttribute("message", message);

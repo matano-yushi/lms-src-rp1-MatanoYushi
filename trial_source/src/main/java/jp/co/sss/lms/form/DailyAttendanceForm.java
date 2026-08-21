@@ -48,7 +48,7 @@ public class DailyAttendanceForm {
 	private String index;
 	
 	/**
-	 * @author matano yushi
+	 * @author 俣野宥士-Task26
 	 * 出勤（時）
 	 */
 	private Integer startHour;

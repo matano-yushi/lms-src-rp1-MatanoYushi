@@ -27,13 +27,14 @@
 					<thead>
 						<tr>
 							<th class="w140">日付</th>
-							<th class="w300">コース内容</th>
+							<th class="w200">コース内容</th>
+							<!-- 俣野宥士　-Task26-->
 							<th class="w60"></th>
 							<th class="w70" colspan="3">出勤</th>
-							<th class="w70" colspan="3">退勤</th>
-							<th class="w100">中抜け時間</th>
+							<th class="w70" style="padding-left:1.5em;" colspan="3">退勤</th>
+							<th class="w80" style="padding-left:3em">中抜け時間</th>
 							<th class="w120">ステータス</th>
-							<th class="w240">備考</th>
+							<th class="w180">備考</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -55,6 +56,8 @@
 								</th:block>
 								<td class="w140">[[${dailyAttendanceForm.dispTrainingDate}]]</td>
 								<td class="w300">[[${dailyAttendanceForm.sectionName}]]</td>
+								<!-- 俣野宥士　-Task26-->
+								<!--定時ボタン-->
 								<td class="w60"><input type="button" class="btn btn-success" value="定時" /></td>
 								<!-- 出勤（時） -->
 								<td>

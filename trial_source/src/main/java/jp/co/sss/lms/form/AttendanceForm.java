@@ -33,10 +33,10 @@ public class AttendanceForm {
 	private List<DailyAttendanceForm> attendanceList;
 	
 	/**時間と分のフォーム（プルダウンリスト）
-	 * @author matano yushi
-	 * LinkedHashMap:キーと値をまとめて管理できる
-	 * ＜Key：送信される値、Value:画面に表示される値＞
+	 *@author 俣野宥士-Task26 
 	 */
+	//＜Key：送信される値、Value:画面に表示される値＞
+	//LinkedHashMap:キーと値をまとめて管理できる
 	private LinkedHashMap<Integer,String>hourMap;
 	private LinkedHashMap<Integer,String>minutesMap;
 }

@@ -32,10 +32,13 @@ public class AttendanceController {
 
 	/**
 	 * 勤怠管理画面 初期表示
+	 * @author matano yushi
 	 * @param lmsUserId
 	 * @param courseId
 	 * @param model
 	 * @throws ParseException
+	 * @param model
+	 * @return 勤怠管理画面
 	 */
 	@RequestMapping(path = "/detail", method = RequestMethod.GET)
 	public String index(Model model)throws ParseException {
@@ -44,11 +47,6 @@ public class AttendanceController {
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
 		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
-		/** 勤怠管理画面 初期表示(過去日が未入力の場合の処理）
-		 * @author matano yushi
-		 * @param model
-		 * @return 勤怠管理画面
-		 */ 
 		//過去日が未入力の場合の表示
 		Boolean notEnterFlg = studentAttendanceService.notEnterCheck();
 		model.addAttribute("notEnterFlg",notEnterFlg);
@@ -109,7 +107,6 @@ public class AttendanceController {
 
 	/**
 	 * 勤怠管理画面 『勤怠情報を直接編集する』リンク押下
-	 * @author matano yushi
 	 * @param model
 	 * @return 勤怠情報直接変更画面
 	 */
@@ -131,11 +128,12 @@ public class AttendanceController {
 
 	/**
 	 * 勤怠情報直接変更画面 『更新』ボタン押下
+	 * @author 俣野宥士-Task26
 	 * @param attendanceForm
 	 * @param model
 	 * @param result
-	 * @return 勤怠管理画面
 	 * @throws ParseException
+	 * @return 勤怠管理画面
 	 */
 	@RequestMapping(path = "/update", params = "complete", method = RequestMethod.POST)
 	public String complete(AttendanceForm attendanceForm, Model model, BindingResult result)

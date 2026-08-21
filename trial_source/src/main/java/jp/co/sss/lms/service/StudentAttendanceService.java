@@ -208,7 +208,7 @@ public class StudentAttendanceService {
 
 	/**
 	 * 勤怠フォームへ設定
-	 * 
+	 * @author 俣野宥士　-Task26
 	 * @param attendanceManagementDtoList
 	 * @return 勤怠編集フォーム
 	 */
@@ -368,10 +368,11 @@ public class StudentAttendanceService {
 	//今日より前の過去日に、未入力の勤怠があるかどうかを判定する
 
 	/**
-	 * 勤怠管理(過去日が未入力の場合の処理）
-	 * @author matano yushi
-	 * @return 未打刻が存在する場合は true、それ以外は false
+	 * 勤怠管理(過去日が未入力の場合の処理）コントローラー
+	 * @author 俣野宥士-Task.25
 	 * @throws ParseException
+	 * @return 未打刻が存在する場合は true、それ以外は false
+	 *
 	 */
 	public Boolean notEnterCheck() throws ParseException {
 		Date trainingDate = attendanceUtil.getTrainingDate();
@@ -392,8 +393,9 @@ public class StudentAttendanceService {
 	}
 
 	/**
-	 * @author matano yushi
-	 * 出退勤データ結合
+	 * 入力フォームからの出勤（時・分）退勤（時・分）データ結合
+	 * @author 俣野宥士　-Task26
+	 * 
 	 */
 
 	public void formatConvaersion(AttendanceForm attendanceForm) {

@@ -10,6 +10,7 @@ import java.util.List;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
 
 import jp.co.sss.lms.dto.AttendanceManagementDto;
 import jp.co.sss.lms.dto.LoginUserDto;
@@ -374,6 +375,7 @@ public class StudentAttendanceService {
 	 * @return 未打刻が存在する場合は true、それ以外は false
 	 *
 	 */
+	//sdf.parse()の日付変換処理があるから、例外処理記載
 	public Boolean notEnterCheck() throws ParseException {
 		//SimpleDateFormat・・・日付の形を変換するためのクラス
 		//日付の形を指定するための、道具を作ってる
@@ -387,7 +389,7 @@ public class StudentAttendanceService {
 		//＊trainingDateは時刻元々含まれてないが、SimpleDateFormat使用するからこと形で記載
 		trainingDate = sdf.parse(sdf.format(trainingDate));
 		Integer lmsUserId = loginUserDto.getLmsUserId();
-		short deleteFlg = 0;	
+		short deleteFlg = 0;
 		//サービス→Mapperに（）の中を渡してる、上の条件をMapperに渡してる
 		Integer notEnterCount = tStudentAttendanceMapper.notEnterCount(lmsUserId, deleteFlg, trainingDate);
 
@@ -397,7 +399,7 @@ public class StudentAttendanceService {
 		} else {
 			return false;
 		}
-		
+
 	}
 
 	/**
@@ -408,7 +410,8 @@ public class StudentAttendanceService {
 
 	public void formatConvaersion(AttendanceForm attendanceForm) {
 		if (attendanceForm == null || attendanceForm.getAttendanceList() == null) {
-			return;}
+			return;
+		}
 		for (DailyAttendanceForm dailyAttendanceForm : attendanceForm.getAttendanceList()) {
 			Integer startHour = dailyAttendanceForm.getStartHour();
 			Integer startMinutes = dailyAttendanceForm.getStartMinutes();
@@ -425,9 +428,32 @@ public class StudentAttendanceService {
 			}
 
 		}
-			
-			
-			
-			
-		}
+
 	}
+
+	/**
+	 * 勤怠入力チェック
+	 * 俣野宥士-Task27
+	 * 
+	 */
+	public void formatConversion(AttendanceForm attendanceForm,BindingResult result) {
+		//getAttendanceListは１日分だから、DailyAttendanceForm型になる
+		List<DailyAttendanceForm> dailyAttendanceForm = attendanceForm.getAttendanceList();
+		for (int i = 0; i <dailyAttendanceForm.size();i++) {
+			//１日文のデータを変数に入れてる
+			DailyAttendanceForm dailyAttendanceFormList = dailyAttendanceForm.get(i);
+			//lengh()で文字数の長さ見てる
+			if (dailyAttendanceFormList.getNote()!=null&& dailyAttendanceFormList.getNote().length() > 100) {
+				//String errorNote = "attendanceList["+i+"].note";
+				
+				
+				
+				
+
+			}
+			
+
+		}
+
+	}
+}

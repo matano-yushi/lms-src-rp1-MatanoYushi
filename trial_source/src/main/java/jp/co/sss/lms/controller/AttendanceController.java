@@ -41,7 +41,7 @@ public class AttendanceController {
 	 * @return 勤怠管理画面
 	 */
 	@RequestMapping(path = "/detail", method = RequestMethod.GET)
-	public String index(Model model)throws ParseException {
+	public String index(Model model) throws ParseException {
 
 		// 勤怠一覧の取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
@@ -49,7 +49,7 @@ public class AttendanceController {
 		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
 		//過去日が未入力の場合の表示
 		Boolean notEnterFlg = studentAttendanceService.notEnterCheck();
-		model.addAttribute("notEnterFlg",notEnterFlg);
+		model.addAttribute("notEnterFlg", notEnterFlg);
 
 		return "attendance/detail";
 	}
@@ -103,7 +103,6 @@ public class AttendanceController {
 
 		return "attendance/detail";
 	}
-		
 
 	/**
 	 * 勤怠管理画面 『勤怠情報を直接編集する』リンク押下
@@ -112,8 +111,7 @@ public class AttendanceController {
 	 */
 	@RequestMapping(path = "/update")
 	public String update(Model model) {
-        //入力された出退勤情報を呼び出してる(追加）
-		
+		//入力された出退勤情報を呼び出してる(追加）
 
 		// 勤怠管理リストの取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
@@ -149,7 +147,5 @@ public class AttendanceController {
 
 		return "attendance/detail";
 	}
-
-	
 
 }

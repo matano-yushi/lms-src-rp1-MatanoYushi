@@ -375,21 +375,29 @@ public class StudentAttendanceService {
 	 *
 	 */
 	public Boolean notEnterCheck() throws ParseException {
-		Date trainingDate = attendanceUtil.getTrainingDate();
-		//LocalDate today = LocalDate.now();
-		Integer lmsUserId = loginUserDto.getLmsUserId();
-		short deleteFlg = 0;
+		//SimpleDateFormat・・・日付の形を変換するためのクラス
+		//日付の形を指定するための、道具を作ってる
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-		//時刻を切り落として日付だけに揃える（同じ変数 trainingDate に上書き）
+		//現在の日付をUtilからとってきてる
+		Date trainingDate = attendanceUtil.getTrainingDate();
+		//format=Date→Stringに変換（いらない時刻を落とす）
+		//parse=String→Date（Dateに戻す）
+		//１度、年月日だけのStringにすることで、時刻を切り落としてる
+		//その後、Mapperに渡すためにDateに型合わせたいから戻してる
+		//＊trainingDateは時刻元々含まれてないが、SimpleDateFormat使用するからこと形で記載
 		trainingDate = sdf.parse(sdf.format(trainingDate));
-		//上3つで使用した値をここで、実行してる
+		Integer lmsUserId = loginUserDto.getLmsUserId();
+		short deleteFlg = 0;	
+		//サービス→Mapperに（）の中を渡してる、上の条件をMapperに渡してる
 		Integer notEnterCount = tStudentAttendanceMapper.notEnterCount(lmsUserId, deleteFlg, trainingDate);
 
 		if (notEnterCount > 0) {
+			//Boolenだから、trueとfalseを返してる
 			return true;
 		} else {
 			return false;
 		}
+		
 	}
 
 	/**
@@ -417,5 +425,9 @@ public class StudentAttendanceService {
 			}
 
 		}
+			
+			
+			
+			
+		}
 	}
-}

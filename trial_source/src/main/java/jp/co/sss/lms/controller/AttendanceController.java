@@ -32,7 +32,7 @@ public class AttendanceController {
 
 	/**
 	 * 勤怠管理画面 初期表示
-	 * @author matano yushi
+	 * @author 俣野宥士-Task25
 	 * @param lmsUserId
 	 * @param courseId
 	 * @param model

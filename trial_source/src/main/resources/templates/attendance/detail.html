@@ -87,9 +87,12 @@
 			return hours + ':' + minutes;
 		}
 	</script>
-	/*俣野宥士-Task25  */
+	<!-- 俣野宥士-Task25  -->
+	<!-- th:inline="javascript"・・・Thymeleafの値をJavaScriptの中で使えるようにしてる -->
 	 <script type="text/javascript" th:inline="javascript">
+		 //この画面の読み込みが終わったら{}の中の処理を実行してといってる 
         window.onload = function () {
+		//notEnterFlg（左）を　notEnterFlg（右）に入れてる
 			var notEnterFlg = /*[[${notEnterFlg}]]*/ false;
           if (notEnterFlg) {
             alert("過去日の勤怠に未入力があります。");

@@ -126,7 +126,7 @@ public class AttendanceController {
 
 	/**
 	 * 勤怠情報直接変更画面 『更新』ボタン押下
-	 * @author 俣野宥士-Task26
+	 * @author 俣野宥士-Task26、Task27
 	 * @param attendanceForm
 	 * @param model
 	 * @param result
@@ -134,9 +134,13 @@ public class AttendanceController {
 	 * @return 勤怠管理画面
 	 */
 	@RequestMapping(path = "/update", params = "complete", method = RequestMethod.POST)
-	public String complete(AttendanceForm attendanceForm, Model model, BindingResult result)
+	public String complete(AttendanceForm attendanceForm,BindingResult result,Model model)
 			throws ParseException {
+		//もし不備が見つかると、result（エラー保持用の箱）の中に rejectValue でエラー情報が書き込まれる
 		studentAttendanceService.formatConvaersion(attendanceForm);
+		studentAttendanceService.updateInputCheck(attendanceForm,result);
+		if(result.hasErrors()) {
+		return "attendance/update";}
 		// 更新
 		String message = studentAttendanceService.update(attendanceForm);
 		model.addAttribute("message", message);

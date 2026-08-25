@@ -22,7 +22,14 @@
 	<div class="row">
 		<div class="bs-component col-sm-12">
 
-			<form th:action="@{/attendance/update}" method="post">
+			<form th:action="@{/attendance/update}" action="#" th:object="${attendanceForm}" method="post">
+				<!--「エラーが1つ以上ある場合だけ」 <ul> タグ（箇条書きの枠組み）を表示します。-->
+				<ul th:if="${#fields.hasAnyErrors()}" style="padding-left: 0; list-style: none;" >
+				<!-- 発生したすべてのエラーメッセージを取り出し、メッセージの数だけ <li>（リストの行）を繰り返し生成 -->
+					<li th:each="error : ${#fields.allErrors()}"style="color:#d9edf7;font-weight: bold;"> *[[${error}]]</li>
+				</ul>
+
+
 				<table class="table table-hover dataTable no-footer">
 					<thead>
 						<tr>
@@ -128,7 +135,12 @@
 					<th:block th:if="${session.loginUserDto.role != '0001'}">
 						<input type="submit" value="戻る" name="indexCompany" class="btn btn-default" />
 					</th:block>
-					<input type="submit" value="更新" name="complete" class="btn btn-info" />
+					<!--俣野宥士　-Task26-->
+					<!--confirm・・・画面にダイアログを表示して、trueとfalseを返す -->
+					<!--onclick・・・送信前に、Javascの結果を返す-->
+					<!--return・・・「OK」を押したときだけフォームを送信し、「キャンセル」を押したときは送信を止める-->
+					<input type="submit" value="更新" name="complete" class="btn btn-info"
+						onclick="return confirm('更新します。よろしいですか？');" />
 				</div>
 
 			</form>

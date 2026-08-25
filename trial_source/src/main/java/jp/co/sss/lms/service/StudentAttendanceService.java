@@ -375,6 +375,7 @@ public class StudentAttendanceService {
 	 * @return 未打刻が存在する場合は true、それ以外は false
 	 *
 	 */
+	
 	//sdf.parse()の日付変換処理があるから、例外処理記載
 	public Boolean notEnterCheck() throws ParseException {
 		//SimpleDateFormat・・・日付の形を変換するためのクラス
@@ -386,7 +387,7 @@ public class StudentAttendanceService {
 		//parse=String→Date（Dateに戻す）
 		//１度、年月日だけのStringにすることで、時刻を切り落としてる
 		//その後、Mapperに渡すためにDateに型合わせたいから戻してる
-		//＊trainingDateは時刻元々含まれてないが、SimpleDateFormat使用するからこと形で記載
+		//＊trainingDateは時刻元々含まれてないが、SimpleDateFormat使用するからこの形で記載
 		trainingDate = sdf.parse(sdf.format(trainingDate));
 		Integer lmsUserId = loginUserDto.getLmsUserId();
 		short deleteFlg = 0;
@@ -436,22 +437,74 @@ public class StudentAttendanceService {
 	 * 俣野宥士-Task27
 	 * 
 	 */
-	public void formatConversion(AttendanceForm attendanceForm,BindingResult result) {
+	public void updateInputCheck(AttendanceForm attendanceForm, BindingResult result) {
 		//getAttendanceListは１日分だから、DailyAttendanceForm型になる
 		List<DailyAttendanceForm> dailyAttendanceForm = attendanceForm.getAttendanceList();
-		for (int i = 0; i <dailyAttendanceForm.size();i++) {
+		//1か月繰り返してる
+		for (int i = 0; i < dailyAttendanceForm.size(); i++) {
 			//１日文のデータを変数に入れてる
-			DailyAttendanceForm dailyAttendanceFormList = dailyAttendanceForm.get(i);
+			DailyAttendanceForm dailyForm = dailyAttendanceForm.get(i);
 			//lengh()で文字数の長さ見てる
-			if (dailyAttendanceFormList.getNote()!=null&& dailyAttendanceFormList.getNote().length() > 100) {
-				//String errorNote = "attendanceList["+i+"].note";
-				
-				
-				
-				
+			if (dailyForm.getNote() != null && dailyForm.getNote().length() > 100) {
+				//エラーを出す画面の場所指定
+				String errorNote = "attendanceList[" + i + "].note";
+				//result.rejectValue(...）・・・エラーの場合の処理記載
+				//errorNote・・・エラーを出す場所
+				//null・・・必須、テンプレート見つからなかった場合の処理
+				result.rejectValue(errorNote,"maxlength", new Object[] { "備考", 100 }, null);
 
 			}
-			
+			//退勤時間（時・分）片方未入力チェック
+			Integer startHour = dailyForm.getStartHour();
+			Integer startMinutes = dailyForm.getStartMinutes();
+			if ((startHour != null && startMinutes == null) || (startHour == null && startMinutes != null)) {
+				String errorStartHourTime = "attendanceList[" + i + "].startHour";
+				String errorStartMinutesTime = "attendanceList[" + i + "].startMinutes";
+				result.rejectValue(errorStartHourTime,"input.invalid", new Object[] { "出勤時間", }, null);
+				result.rejectValue(errorStartMinutesTime,"input.invalid", new Object[] { "出勤時間", }, null);
+
+			}
+			//出勤時間（時・分）片方未入力チェック
+			Integer endHour = dailyForm.getEndHour();
+			Integer endMinutes = dailyForm.getEndMinutes();
+			if ((endHour != null && endMinutes == null) || (endHour == null && endMinutes != null)) {
+				String errorEndHourTime = "attendanceList[" + i + "].endHour";
+				String errorEndMinutesTime = "attendanceList[" + i + "].endMinutes";
+				result.rejectValue(errorEndHourTime,"input.invalid", new Object[] { "退勤時間", }, null);
+				result.rejectValue(errorEndMinutesTime,"input.invalid", new Object[] { "退勤時間", }, null);
+
+			}
+			//出勤時間・退勤時間　ありなしパターン
+			String trainingStartTime = dailyForm.getTrainingStartTime();
+			String trainingEndTime = dailyForm.getTrainingEndTime();
+			if (trainingStartTime == null && trainingEndTime != null) {
+				String errorStartAndEnd = "attendanceList[" + i + "].trainingStartTime";
+				result.rejectValue(errorStartAndEnd,"attendance.punchInEmpty");
+
+			}
+			//出勤時間＞退勤時間チェック
+			if (trainingStartTime != null && trainingEndTime != null) {
+			//:があるので、compareToで比較
+				if (trainingStartTime.compareTo(trainingEndTime) > 0) {
+					String errortrainingStartTimeBig = "attendanceList[" + i + "].trainingEndTime";
+					result.rejectValue(errortrainingStartTimeBig,"attendance.trainingTimeRange",
+							new Object[] {trainingEndTime,trainingStartTime}, null);
+
+				}
+			}
+			//中抜け時間>勤務時間
+			Integer blankTime = dailyForm.getBlankTime();
+			if (startHour != null && startMinutes != null && endHour != null && endMinutes != null
+					&& blankTime != null) {
+				int startWorkMinutesTime = dailyForm.getStartHour() * 60 + dailyForm.getStartMinutes();
+				int endWorkMinutesTime = dailyForm.getEndHour() * 60 + dailyForm.getEndMinutes();
+				int totalWorkTime = endWorkMinutesTime - startWorkMinutesTime;
+				if (blankTime > totalWorkTime) {
+					String errorBlankTime = "attendanceList[" + i + "].blankTime";
+					result.rejectValue(errorBlankTime,"attendanceblankTimeError");
+				}
+
+			}
 
 		}
 

@@ -72,9 +72,8 @@ public interface TStudentAttendanceMapper {
 	 * @param deleteFlg
 	 * @param trainingDate
 	 */
-	
+	//過去の研修日で、まだ勤怠入力（打刻）をしていない日数が何件あるか」をデータベースに問い合わせてる
 	Integer notEnterCount(@Param("lmsUserId") Integer lmsUserId,
 			@Param("deleteFlg")Short deleteFlg,
 			@Param("trainingDate")Date trainingDate);
-
 }

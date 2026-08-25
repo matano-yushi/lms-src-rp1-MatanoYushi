@@ -88,8 +88,8 @@
 	</update>
 	
 	<!-- 俣野宥士 Task25 -->
-	<!-- SQL実行した結果が整数だからint SELECTの結果から、resultTypeを決定してる-->
-	<select id="notEnterCount" resultType="int">
+	<!-- SQL実行した結果が整数だからinteger SELECTの結果から、resultTypeを決定してる-->
+	<select id="notEnterCount" resultType="Integer">
 	<!-- 条件に合うデータが何件（何日分）あるか数えて、その数字（1, 2, 3...）を返す -->
 	SELECT COUNT(*)
 	FROM t_student_attendance

@@ -117,8 +117,7 @@ public class AttendanceController {
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
 		// 勤怠フォームの生成
-		AttendanceForm attendanceForm = studentAttendanceService
-				.setAttendanceForm(attendanceManagementDtoList);
+		AttendanceForm attendanceForm = studentAttendanceService.setAttendanceForm(attendanceManagementDtoList);
 		model.addAttribute("attendanceForm", attendanceForm);
 		System.out.println(attendanceForm.getAttendanceList().get(0).getStartHour());
 		return "attendance/update";
@@ -140,7 +139,15 @@ public class AttendanceController {
 		studentAttendanceService.formatConvaersion(attendanceForm);
 		studentAttendanceService.updateInputCheck(attendanceForm,result);
 		if(result.hasErrors()) {
-		return "attendance/update";}
+			//プルダウンの時間２回目
+		    List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
+		    // 再度フォームを作り直してる
+		    AttendanceForm resetForm = studentAttendanceService.setAttendanceForm(attendanceManagementDtoList);
+		    attendanceForm.setHourMap(resetForm.getHourMap());
+		    attendanceForm.setMinutesMap(resetForm.getMinutesMap());
+		    attendanceForm.setBlankTimes(resetForm.getBlankTimes());
+		    return "attendance/update";
+		}
 		// 更新
 		String message = studentAttendanceService.update(attendanceForm);
 		model.addAttribute("message", message);

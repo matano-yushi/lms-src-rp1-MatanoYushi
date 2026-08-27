@@ -125,7 +125,7 @@ public class AttendanceController {
 
 	/**
 	 * 勤怠情報直接変更画面 『更新』ボタン押下
-	 * @author 俣野宥士-Task26、Task27
+	 * @author 俣野宥士-Task.26、Task.27
 	 * @param attendanceForm
 	 * @param model
 	 * @param result

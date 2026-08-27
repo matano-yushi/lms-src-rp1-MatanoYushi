@@ -4,9 +4,21 @@
 <head>
 	<meta charset="UTF-8">
 	<title>勤怠情報変更｜LMS</title>
+
+
 </head>
 
 <body>
+<!-- 俣野宥士 Task28　-->
+<!-- ダイアログの色指定-->
+	<style>
+		.field-error {
+			background-color: #F0B9B9;
+			border-color: #CF3838;
+			border-width: 2px;
+
+		}
+	</style>
 
 	<th:block th:if="${session.loginUserDto.role == '0001'}">
 		<h2>勤怠管理</h2>
@@ -21,12 +33,13 @@
 
 	<div class="row">
 		<div class="bs-component col-sm-12">
-
+			<!-- 俣野宥士　Task.27 -->
 			<form th:action="@{/attendance/update}" action="#" th:object="${attendanceForm}" method="post">
 				<!--「エラーが1つ以上ある場合だけ」 <ul> タグ（箇条書きの枠組み）を表示します。-->
-				<ul th:if="${#fields.hasAnyErrors()}" style="padding-left: 0; list-style: none;" >
-				<!-- 発生したすべてのエラーメッセージを取り出し、メッセージの数だけ <li>（リストの行）を繰り返し生成 -->
-					<li th:each="error : ${#fields.allErrors()}"style="color:#d9edf7;font-weight: bold;"> *[[${error}]]</li>
+				<ul th:if="${#fields.hasAnyErrors()}" style="padding-left: 0; list-style: none;">
+					<!-- 発生したすべてのエラーメッセージを取り出し、メッセージの数だけ <li>（リストの行）を繰り返し生成 -->
+					<li th:each="error : ${#fields.allErrors()}" style="color:#CF3838;font-weight: bold;"> *[[${error}]]
+					</li>
 				</ul>
 
 
@@ -68,7 +81,12 @@
 								<td class="w60"><input type="button" class="btn btn-success" value="定時" /></td>
 								<!-- 出勤（時） -->
 								<td>
+									<!--俣野宥士　-Task27 -->
+									<!--  th:classappend・・・前のclassを消さずに新しいclass付けれる -->
+									<!--  "${#fields.hasErrors（）・・・エラーがあるかどうか判定、あればtrue返す-->
+									<!--  'field-error' : ''・・・（条件？　正の時：偽の時）true→field-error追加-->
 									<select th:name="|attendanceList[${stat.index}].startHour|" class="form-control"
+										th:classappend="${#fields.hasErrors('attendanceList[' + stat.index + '].startHour')} ? 'field-error' : ''"
 										style="width: 65px; display: inline-block;">
 										<option th:each="hour : ${attendanceForm.hourMap}" th:value="${hour.key}"
 											th:text="${hour.value}"
@@ -80,6 +98,7 @@
 								<!-- 出勤（分） -->
 								<td>
 									<select th:name="|attendanceList[${stat.index}].startMinutes|" class="form-control"
+										th:classappend="${#fields.hasErrors('attendanceList[' + stat.index + '].startMinutes')} ? 'field-error' : ''"
 										style="width: 65px; display: inline-block;">
 										<option th:each="minute : ${attendanceForm.minutesMap}" th:value="${minute.key}"
 											th:text="${minute.value}"
@@ -91,6 +110,7 @@
 								<!-- 退勤（時） -->
 								<td>
 									<select th:name="|attendanceList[${stat.index}].endHour|" class="form-control"
+										th:classappend="${#fields.hasErrors('attendanceList['+ stat.index + '].endHour')} ? 'field-error' : ''"
 										style="width: 65px; display: inline-block;">
 										<option th:each="hour : ${attendanceForm.hourMap}" th:value="${hour.key}"
 											th:text="${hour.value}"
@@ -102,6 +122,7 @@
 								<!-- 退勤（分） -->
 								<td>
 									<select th:name="|attendanceList[${stat.index}].endMinutes|" class="form-control"
+										th:classappend="${#fields.hasErrors('attendanceList['+ stat.index + '].endMinutes')or #fields.hasErrors('attendanceList[' + stat.index + '].endHour')} ? 'field-error' : ''"
 										style="width: 65px; display: inline-block;">
 										<option th:each="minute : ${attendanceForm.minutesMap}" th:value="${minute.key}"
 											th:text="${minute.value}"
@@ -111,6 +132,7 @@
 								</td>
 								<td class="w80">
 									<select th:name="|attendanceList[${stat.index}].blankTime|" class="form-control"
+										th:classappend="${#fields.hasErrors('attendanceList[' + stat.index + '].blankTime')} ? 'field-error':''"
 										style="width: 105px; display: inline-block;">
 										<option th:each="blankTime : ${attendanceForm.blankTimes}"
 											th:value="${blankTime.key}" th:inlne="text" class="form-control"
@@ -121,6 +143,7 @@
 								<td class="w70">[[${dailyAttendanceForm.statusDispName}]]</td>
 								<td class="w240">
 									<input type="text" th:name="|attendanceList[${stat.index}].note|"
+										th:classappend="${#fields.hasErrors('attendanceList[' + stat.index + '].note')}? 'field-error':''"
 										th:value="${dailyAttendanceForm.note}" class="form-control"></input>
 								</td>
 							</tr>
@@ -146,7 +169,6 @@
 			</form>
 		</div>
 	</div>
-
 </body>
 
 </html>

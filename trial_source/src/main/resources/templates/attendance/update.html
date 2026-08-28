@@ -4,19 +4,42 @@
 <head>
 	<meta charset="UTF-8">
 	<title>勤怠情報変更｜LMS</title>
-
-
 </head>
 
+
 <body>
-<!-- 俣野宥士 Task28　-->
-<!-- ダイアログの色指定-->
+
+	<!-- 俣野宥士 Task28、Task29　-->
+	<!-- ダイアログの色指定-->
+	<!-- エラー時の横ライン水色指定-->
+	<!--一覧スクロールの10日分表示-->
 	<style>
 		.field-error {
 			background-color: #F0B9B9;
 			border-color: #CF3838;
 			border-width: 2px;
+		}
 
+		.today-background,
+		.today-background>td,
+		table.table tbody tr.today-background>td {
+			background-color: #d9edf7 !important;
+
+		}
+
+		.table-scroll-container {
+			max-height: 610px;
+			overflow-y: auto;
+			margin-bottom: 15px;
+			border: 1px solid #ccc;
+		}
+
+
+		.table-scroll-container table thead th {
+			position: sticky;
+			top: 0;
+			background-color: #fff;
+			z-index: 1;
 		}
 	</style>
 
@@ -38,118 +61,124 @@
 				<!--「エラーが1つ以上ある場合だけ」 <ul> タグ（箇条書きの枠組み）を表示します。-->
 				<ul th:if="${#fields.hasAnyErrors()}" style="padding-left: 0; list-style: none;">
 					<!-- 発生したすべてのエラーメッセージを取り出し、メッセージの数だけ <li>（リストの行）を繰り返し生成 -->
-					<li th:each="error : ${#fields.allErrors()}" style="color:#CF3838;font-weight: bold;"> *[[${error}]]
+					<li th:each="error :${#sets.toSet(#fields.allErrors())}" style="color:#CF3838;font-weight: bold;"> *[[${error}]]
 					</li>
 				</ul>
-
-
-				<table class="table table-hover dataTable no-footer">
-					<thead>
-						<tr>
-							<th class="w140">日付</th>
-							<th class="w200">コース内容</th>
-							<!-- 俣野宥士　-Task26-->
-							<th class="w60"></th>
-							<th class="w70" colspan="3">出勤</th>
-							<th class="w70" style="padding-left:1.5em;" colspan="3">退勤</th>
-							<th class="w80" style="padding-left:3em">中抜け時間</th>
-							<th class="w120">ステータス</th>
-							<th class="w180">備考</th>
-						</tr>
-					</thead>
-					<tbody>
-						<th:block th:each="dailyAttendanceForm, stat : ${attendanceForm.attendanceList}">
+				<!--俣野宥士 -task.29-->
+				<div class="table-scroll-container">
+					<table class="table table-hover dataTable no-footer">
+						<thead>
 							<tr>
-								<th:block>
-									<input type="hidden" th:name="|attendanceList[${stat.index}].isToday|"
-										th:value="${dailyAttendanceForm.isToday}" />
-									<input type="hidden" th:name="|attendanceList[${stat.index}].studentAttendanceId|"
-										th:value="${dailyAttendanceForm.studentAttendanceId}" />
-									<input type="hidden" th:name="|attendanceList[${stat.index}].trainingDate|"
-										th:value="${dailyAttendanceForm.trainingDate}" />
-									<input type="hidden" th:name="|attendanceList[${stat.index}].dispTrainingDate|"
-										th:value="${dailyAttendanceForm.dispTrainingDate}" />
-									<input type="hidden" th:name="|attendanceList[${stat.index}].sectionName|"
-										th:value="${dailyAttendanceForm.sectionName}" />
-									<input type="hidden" th:name="|attendanceList[${stat.index}].statusDispName|"
-										th:value="${dailyAttendanceForm.statusDispName}" />
-								</th:block>
-								<td class="w140">[[${dailyAttendanceForm.dispTrainingDate}]]</td>
-								<td class="w300">[[${dailyAttendanceForm.sectionName}]]</td>
-								<!-- 俣野宥士　-Task26-->
-								<!--定時ボタン-->
-								<td class="w60"><input type="button" class="btn btn-success" value="定時" /></td>
-								<!-- 出勤（時） -->
-								<td>
-									<!--俣野宥士　-Task27 -->
-									<!--  th:classappend・・・前のclassを消さずに新しいclass付けれる -->
-									<!--  "${#fields.hasErrors（）・・・エラーがあるかどうか判定、あればtrue返す-->
-									<!--  'field-error' : ''・・・（条件？　正の時：偽の時）true→field-error追加-->
-									<select th:name="|attendanceList[${stat.index}].startHour|" class="form-control"
-										th:classappend="${#fields.hasErrors('attendanceList[' + stat.index + '].startHour')} ? 'field-error' : ''"
-										style="width: 65px; display: inline-block;">
-										<option th:each="hour : ${attendanceForm.hourMap}" th:value="${hour.key}"
-											th:text="${hour.value}"
-											th:selected="${hour.key != null and dailyAttendanceForm.startHour != null and hour.key == dailyAttendanceForm.startHour}">
-										</option>
-									</select>
-								</td>
-								<td>:</td>
-								<!-- 出勤（分） -->
-								<td>
-									<select th:name="|attendanceList[${stat.index}].startMinutes|" class="form-control"
-										th:classappend="${#fields.hasErrors('attendanceList[' + stat.index + '].startMinutes')} ? 'field-error' : ''"
-										style="width: 65px; display: inline-block;">
-										<option th:each="minute : ${attendanceForm.minutesMap}" th:value="${minute.key}"
-											th:text="${minute.value}"
-											th:selected="${minute.key != null and dailyAttendanceForm.startMinutes != null and minute.key == dailyAttendanceForm.startMinutes}">
-										</option>
-									</select>
-								</td>
-
-								<!-- 退勤（時） -->
-								<td>
-									<select th:name="|attendanceList[${stat.index}].endHour|" class="form-control"
-										th:classappend="${#fields.hasErrors('attendanceList['+ stat.index + '].endHour')} ? 'field-error' : ''"
-										style="width: 65px; display: inline-block;">
-										<option th:each="hour : ${attendanceForm.hourMap}" th:value="${hour.key}"
-											th:text="${hour.value}"
-											th:selected="${hour.key != null and dailyAttendanceForm.endHour != null and hour.key == dailyAttendanceForm.endHour}">
-										</option>
-									</select>
-								</td>
-								<td>:</td>
-								<!-- 退勤（分） -->
-								<td>
-									<select th:name="|attendanceList[${stat.index}].endMinutes|" class="form-control"
-										th:classappend="${#fields.hasErrors('attendanceList['+ stat.index + '].endMinutes')or #fields.hasErrors('attendanceList[' + stat.index + '].endHour')} ? 'field-error' : ''"
-										style="width: 65px; display: inline-block;">
-										<option th:each="minute : ${attendanceForm.minutesMap}" th:value="${minute.key}"
-											th:text="${minute.value}"
-											th:selected="${minute.key != null and dailyAttendanceForm.endMinutes != null and minute.key == dailyAttendanceForm.endMinutes}">
-										</option>
-									</select>
-								</td>
-								<td class="w80">
-									<select th:name="|attendanceList[${stat.index}].blankTime|" class="form-control"
-										th:classappend="${#fields.hasErrors('attendanceList[' + stat.index + '].blankTime')} ? 'field-error':''"
-										style="width: 105px; display: inline-block;">
-										<option th:each="blankTime : ${attendanceForm.blankTimes}"
-											th:value="${blankTime.key}" th:inlne="text" class="form-control"
-											th:selected="${blankTime.key == dailyAttendanceForm.blankTime}">
-											[[${blankTime.value}]]</option>
-									</select>
-								</td>
-								<td class="w70">[[${dailyAttendanceForm.statusDispName}]]</td>
-								<td class="w240">
-									<input type="text" th:name="|attendanceList[${stat.index}].note|"
-										th:classappend="${#fields.hasErrors('attendanceList[' + stat.index + '].note')}? 'field-error':''"
-										th:value="${dailyAttendanceForm.note}" class="form-control"></input>
-								</td>
+								<th class="w140">日付</th>
+								<th class="w200">コース内容</th>
+								<!-- 俣野宥士　-Task.26-->
+								<th class="w60"></th>
+								<th class="w70" colspan="3">出勤</th>
+								<th class="w70" style="padding-left:1.5em;" colspan="3">退勤</th>
+								<th class="w80" style="padding-left:3em">中抜け時間</th>
+								<th class="w120">ステータス</th>
+								<th class="w180">備考</th>
 							</tr>
-						</th:block>
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							<th:block th:each="dailyAttendanceForm, stat : ${attendanceForm.attendanceList}">
+								<!-- 俣野宥士 -Task27-->
+								<!-- <tr　内に記載で行指定、エラー判定して、background呼び出し-->
+								<tr th:classappend="${dailyAttendanceForm.isToday == true}? 'today-background' : ''">
+									<th:block>
+										<input type="hidden" th:name="|attendanceList[${stat.index}].isToday|"
+											th:value="${dailyAttendanceForm.isToday}" />
+										<input type="hidden"
+											th:name="|attendanceList[${stat.index}].studentAttendanceId|"
+											th:value="${dailyAttendanceForm.studentAttendanceId}" />
+										<input type="hidden" th:name="|attendanceList[${stat.index}].trainingDate|"
+											th:value="${dailyAttendanceForm.trainingDate}" />
+										<input type="hidden" th:name="|attendanceList[${stat.index}].dispTrainingDate|"
+											th:value="${dailyAttendanceForm.dispTrainingDate}" />
+										<input type="hidden" th:name="|attendanceList[${stat.index}].sectionName|"
+											th:value="${dailyAttendanceForm.sectionName}" />
+										<input type="hidden" th:name="|attendanceList[${stat.index}].statusDispName|"
+											th:value="${dailyAttendanceForm.statusDispName}" />
+									</th:block>
+									<td class="w140">[[${dailyAttendanceForm.dispTrainingDate}]]</td>
+									<td class="w300">[[${dailyAttendanceForm.sectionName}]]</td>
+									<!-- 俣野宥士　-Task.26-->
+									<!--定時ボタン-->
+									<td class="w60"><input type="button" class="btn btn-success" value="定時" /></td>
+									<!-- 出勤（時） -->
+									<td>
+										<!--俣野宥士　-Task.27 -->
+										<!--  th:classappend・・・前のclassを消さずに新しいclass付けれる -->
+										<!--  "${#fields.hasErrors（）・・・エラーがあるかどうか判定、あればtrue返す-->
+										<!--  'field-error' : ''・・・（条件？　正の時：偽の時）true→field-error追加-->
+										<select th:name="|attendanceList[${stat.index}].startHour|" class="form-control"
+											th:classappend="${#fields.hasErrors('attendanceList[' + stat.index + '].startHour')} ? 'field-error' : ''"
+											style="width: 65px; display: inline-block;">
+											<option th:each="hour : ${attendanceForm.hourMap}" th:value="${hour.key}"
+												th:text="${hour.value}"
+												th:selected="${hour.key != null and dailyAttendanceForm.startHour != null and hour.key == dailyAttendanceForm.startHour}">
+											</option>
+										</select>
+									</td>
+									<td>:</td>
+									<!-- 出勤（分） -->
+									<td>
+										<select th:name="|attendanceList[${stat.index}].startMinutes|"
+											class="form-control"
+											th:classappend="${#fields.hasErrors('attendanceList[' + stat.index + '].startMinutes')} ? 'field-error' : ''"
+											style="width: 65px; display: inline-block;">
+											<option th:each="minute : ${attendanceForm.minutesMap}"
+												th:value="${minute.key}" th:text="${minute.value}"
+												th:selected="${minute.key != null and dailyAttendanceForm.startMinutes != null and minute.key == dailyAttendanceForm.startMinutes}">
+											</option>
+										</select>
+									</td>
+
+									<!-- 退勤（時） -->
+									<td>
+										<select th:name="|attendanceList[${stat.index}].endHour|" class="form-control"
+											th:classappend="${#fields.hasErrors('attendanceList['+ stat.index + '].endHour')} ? 'field-error' : ''"
+											style="width: 65px; display: inline-block;">
+											<option th:each="hour : ${attendanceForm.hourMap}" th:value="${hour.key}"
+												th:text="${hour.value}"
+												th:selected="${hour.key != null and dailyAttendanceForm.endHour != null and hour.key == dailyAttendanceForm.endHour}">
+											</option>
+										</select>
+									</td>
+									<td>:</td>
+									<!-- 退勤（分） -->
+									<td>
+										<select th:name="|attendanceList[${stat.index}].endMinutes|"
+											class="form-control"
+											th:classappend="${#fields.hasErrors('attendanceList['+ stat.index + '].endMinutes')or #fields.hasErrors('attendanceList[' + stat.index + '].endHour')} ? 'field-error' : ''"
+											style="width: 65px; display: inline-block;">
+											<option th:each="minute : ${attendanceForm.minutesMap}"
+												th:value="${minute.key}" th:text="${minute.value}"
+												th:selected="${minute.key != null and dailyAttendanceForm.endMinutes != null and minute.key == dailyAttendanceForm.endMinutes}">
+											</option>
+										</select>
+									</td>
+									<td class="w80">
+										<select th:name="|attendanceList[${stat.index}].blankTime|" class="form-control"
+											th:classappend="${#fields.hasErrors('attendanceList[' + stat.index + '].blankTime')} ? 'field-error':''"
+											style="width: 105px; display: inline-block;">
+											<option th:each="blankTime : ${attendanceForm.blankTimes}"
+												th:value="${blankTime.key}" th:inlne="text" class="form-control"
+												th:selected="${blankTime.key == dailyAttendanceForm.blankTime}">
+												[[${blankTime.value}]]</option>
+										</select>
+									</td>
+									<td class="w70">[[${dailyAttendanceForm.statusDispName}]]</td>
+									<td class="w240">
+										<input type="text" th:name="|attendanceList[${stat.index}].note|"
+											th:classappend="${#fields.hasErrors('attendanceList[' + stat.index + '].note')}? 'field-error':''"
+											th:value="${dailyAttendanceForm.note}" class="form-control"></input>
+									</td>
+								</tr>
+							</th:block>
+						</tbody>
+					</table>
+				</div>
 
 				<div class="form-group">
 					<th:block th:if="${session.loginUserDto.role == '0001'}">
@@ -169,6 +198,34 @@
 			</form>
 		</div>
 	</div>
+	<!-- 俣野宥士 -Task28　-->
+	<!-- 定時ボタン出力　-->
+	<script>
+		//document.addEventListener・・・ブラウザに対して 「イベント（出来事）が起きたら、指定した処理を実行してね」と予約する仕組み
+		//DOMcintentLoaded・・・「HTMLの読み込み（レンダリング）が完了した瞬間」 というイベント（出来事）の名前
+		//function(){・・・実行したい処理書いてる
+		document.addEventListener('DOMContentLoaded', function () {
+			//document.・・・ドキュメント全体を指す
+			//quarSelectorAll・・・（）の要素を全て探して取ってくる
+			const regularButton = document.querySelectorAll('.btn-success');
+			//取得したボタンリストから、ボタンを１つずつ順に取り出して(button)を繰り返す命令
+			regularButton.forEach(function (button) {
+				//1つ１つの定時ボタンに対して、クリック(click)されたら、この中の処理を実行してね、とイベント登録してる
+				button.addEventListener('click', function () {
+					//this・・・今クリックされた『定時ボタン』他にもあるから、指定してる
+					//closest('tr')・・・表の１行分を探して取ってくる
+					const row = this.closest('tr');
+
+					row.querySelector('select[name$=".startHour"]').value = '9';
+					row.querySelector('select[name$=".startMinutes"]').value = '0';
+					row.querySelector('select[name$=".endHour"]').value = '18';
+					row.querySelector('select[name$=".endMinutes"]').value = '0';
+				});
+			});
+
+		});
+	</script>
 </body>
+
 
 </html>

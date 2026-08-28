@@ -261,6 +261,22 @@ public class StudentAttendanceService {
 			dailyAttendanceForm.setNote(attendanceManagementDto.getNote());
 			dailyAttendanceForm.setSectionName(attendanceManagementDto.getSectionName());
 			dailyAttendanceForm.setIsToday(attendanceManagementDto.getIsToday());
+			//今日の日付を8月21日とみなす
+			if (dailyAttendanceForm.getIsToday() == null || !dailyAttendanceForm.getIsToday()) {
+				Date today = attendanceUtil.getTrainingDate();
+				Date trainingDate = attendanceManagementDto.getTrainingDate();
+				if (today != null && trainingDate != null) {
+					// 年・月・日のみの文字列（yyyyMMdd）に揃えて比較（フォーマット揺れ・時刻ズレを完全回避）
+					String todayStr = dateUtil.dateToString(today, "yyyyMMdd");
+					String targetStr = dateUtil.dateToString(trainingDate, "yyyyMMdd");
+					dailyAttendanceForm.setIsToday(todayStr.equals(targetStr));
+					//if (dailyAttendanceForm.getIsToday() == null || !dailyAttendanceForm.getIsToday()) {
+					//if (dailyAttendanceForm.getTrainingDate() != null
+					//&& dailyAttendanceForm.getTrainingDate().contains("21")) {
+					//dailyAttendanceForm.setIsToday(true);}}
+
+				}
+			}
 			dailyAttendanceForm.setDispTrainingDate(dateUtil
 					.dateToString(attendanceManagementDto.getTrainingDate(), "yyyy年M月d日(E)"));
 			dailyAttendanceForm.setStatusDispName(attendanceManagementDto.getStatusDispName());
@@ -442,6 +458,7 @@ public class StudentAttendanceService {
 				//result.rejectValue(...）・・・エラーの場合の処理記載
 				//errorNote・・・エラーを出す場所
 				//null・・・必須、テンプレート見つからなかった場合の処理
+
 				result.rejectValue(errorNote, "maxlength", new Object[] { "備考", 100 }, null);
 
 			}
@@ -453,23 +470,20 @@ public class StudentAttendanceService {
 			if (startHour == null && startMinutes != null) {
 				String errorStartHourTime = "attendanceList[" + i + "].startHour";
 				result.rejectValue(errorStartHourTime, "input.invalid", new Object[] { "出勤時間", }, null);
-
 			}
 			//出勤時間（分）未入力チェック
 			if (startHour != null && startMinutes == null) {
 				String errorStartMinutesTime = "attendanceList[" + i + "].startMinutes";
 				result.rejectValue(errorStartMinutesTime, "input.invalid", new Object[] { "出勤時間", }, null);
-
 			}
 
 			//退勤時間未入力チェック
 			Integer endHour = dailyForm.getEndHour();
 			Integer endMinutes = dailyForm.getEndMinutes();
 			//退勤時間（時）入力チェック
-			if (endHour == null && endMinutes != null){
+			if (endHour == null && endMinutes != null) {
 				String errorEndHourTime = "attendanceList[" + i + "].endHour";
 				result.rejectValue(errorEndHourTime, "input.invalid", new Object[] { "退勤時間", }, null);
-
 			}
 			//退勤時間（分）入力チェック
 			if (endHour != null && endMinutes == null) {
@@ -484,9 +498,7 @@ public class StudentAttendanceService {
 				//String errorStartAndEnd = "attendanceList[" + i + "].trainingStartTime";
 				//result.rejectValue(errorStartAndEnd, "attendance.punchInEmpty");
 				result.rejectValue("attendanceList[" + i + "].endHour", "attendance.punchInEmpty");
-			    //result.rejectValue("attendanceList[" + i + "].endMinutes", "attendance.punchInEmpty");
-		
-
+				//result.rejectValue("attendanceList[" + i + "].endMinutes", "attendance.punchInEmpty");
 			}
 			//出勤時間＞退勤時間チェック
 			if (trainingStartTime != null && trainingEndTime != null) {
@@ -494,10 +506,9 @@ public class StudentAttendanceService {
 				if (trainingStartTime.compareTo(trainingEndTime) > 0) {
 					//String errortrainingStartTimeBig = "attendanceList[" + i + "].trainingEndTime";
 					//result.rejectValue(errortrainingStartTimeBig, "attendance.trainingTimeRange",
-							//new Object[] { trainingEndTime, trainingStartTime }, null);
+					//neFw Object[] { trainingEndTime, trainingStartTime }, null);
 					result.rejectValue("attendanceList[" + i + "].endHour", "attendance.trainingTimeRange",
-							new Object[] { trainingEndTime, trainingStartTime }, null);
-
+							new Object[] {i+1}, null);
 				}
 			}
 			//中抜け時間>勤務時間
@@ -517,4 +528,5 @@ public class StudentAttendanceService {
 		}
 
 	}
+
 }
